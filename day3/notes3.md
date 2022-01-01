@@ -433,4 +433,147 @@ HashMap中Index的计算方式：index=HashCode(key)&(length-1)
 假定HashMap的长度是16，计算Length-1的结果是十进制的15，二进制的1111
 把两个结果做与运算，1011100011101011101001&1111=1001，十进制是9，所以index=9
 
+## 3.8. 哈希函数的实现
+```js
+// 设计哈希函数
+
+// 将字符串转成一个比较大的数字：hashCode
+// 将大的数字hashCode压缩到数组范围（大小）之内
+function hashFunc(str, size) {
+    // 1. 定义hashCode变量
+    var hashCode=0
+
+    // 2. 霍纳法则，计算hashCode的值
+    for (var i=0;i<str.length;i++){
+        // str.charCodeAt(i)
+        hashCode=37*hashCode+str.charCodeAt(i)
+    }
+
+    // 3. 取余操作
+    var index=hashCode%size
+    return index
+}
+
+// 测试哈希函数
+alert(hashFunc('abc',7))  
+alert(hashFunc('hgeig',7))  
+alert(hashFunc('dga',7))  
+alert(hashFunc('gdgagrae',7))  
+```
+## 3.9. 创建哈希表
+我们这里采用链地址法来实现哈希表
+实现的哈希表（基于storge的数组）每个index对应的是一个数组（bucket).（当然基于链表也可以）
+bucket中存放什么呢？我们最好将key和value都放进去，我们继续使用一个数组（其实其他语言使用元组更好）
+最后我们的哈希表的数据格式是这样的：[[[key,value],[key,value],[key,value]],[[key,value],[key,value]],[[key,value]]]
+
+### 3.9.1.  哈希表的属性
+我们定义了三个属性：
+- storge作为我们的数组，数组中存放相关的元素
+- count表示当前已经存在了多少数据
+- limit用于标记数组中一共可以存放多少个元素
+```js
+this.storge = []
+this.count = 0 //当前数组已经存放的元素个数
+// loadFactor >0.75 需要对数组进行扩容
+// loadFactor<0.25 需要对数组进行减小容量
+this.limit = 7 //数组长度
+```
+
+### 3.9.2. 插入&修改数据方法
+哈希表的插入和修改操作是同一个函数，因为当使用者传入一个[key,value]时：
+- 如果原来不存在该key，就是插入操作
+- 如果原来已经存在该key，就是修改操作
+
+##### 思路：
+1. 根据key获取索引值，目的是将数据插入到对应的位置
+2. 根据索引值取出bucket
+   - 如果bucket不存在，创建bucket，并且防止在该索引的位置
+   - 如果bucket存在，进行下面的操作
+3. 判断是新增还是修改原来的值
+   - 如果已经有值了，那么就修改原来的值
+   - 如果没有值，执行后面的添加操作
+4. 执行新增操作
+
+![](2022-01-01-21-25-37.png)
+
+```js
+// 插入&修改操作
+HashTable.prototype.put = function (key, value) {
+    // 1. 根据key获取index
+    var index = this.hashFunc(key, this.limit)
+
+    // 2. 根据index取出对应的bucket
+    var bucket = this.storge[index]
+
+    // 3. 判断该bucket是否为null
+    if (bucket == null) {
+        bucket = []
+        this.storge[index] = bucket
+    }
+
+    // 4. 判断是否是修改数据
+    for (var i = 0; i < bucket.length; i++) {
+        var tuple = bucket[i]
+
+        if (tuple[0] == key) {
+            tuple[1] = value
+            return
+        }
+    }
+
+    // 5. 添加操作
+    bucket.push([key, value])
+    this.count += 1
+}
+```
+
+### 3.9.3. 获取方法
+##### 思路：
+1. 根据key获取对应的index
+2. 根据index获取对应的bucket
+3. 判断bucket是否为null
+   - 如果为null，直接返回null
+   - 如果不为null,进行下一步操作
+4. 线性查找bucket中每一个key是否等于传入的key
+   - 如果等于，直接返回对应的value
+5. 遍历完后，依然没有找到对应的key
+   - 直接返回 null即可
+
+
+```js
+// 获取操作
+HashTable.prototype.get=function(key){
+    // 1. 根据key获取对应的index
+    var index=this.hashFunc(key,this.limit)
+
+    // 2. 根据index获取对应的bucket
+    var bucket =this.storge[index]
+
+    // 3. 判断bucket是否为null
+    if(bucket==null){
+        return null
+    }
+
+    // 4. 有bucket，遍历bucket进行线性查找
+    for (var i=0;i<bucket.length;i++){
+        var tuple=bucket[i]
+        if (tuple[0]==key){
+            return tuple[1]
+        }
+    }
+
+    // 5. 遍历完bucket依然没有找到，返回null
+    return null
+}
+```
+
+### 3.9.4. 删除方法
+##### 思路：
+1. 根据key获取对应的index
+2. 根据index获取bucket
+3. 判断bucket是否存在
+   - 如果不存在，直接返回null
+   - 如果存在进行下一步操作
+4. 线性查找，寻找对应的数据，并且删除
+5. 如果遍历完成之后依然没有找到，那么返回null
 
