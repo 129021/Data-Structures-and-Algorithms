@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 封装函数：判断传入的数字是否是质数
+        // 质数：只能被1和自己整除的数
+        // 也就是，不能被2到num-1之间的数字整除（取余操作得到0）
+        function isPrime(num) {
+
+            for (var i = 2; i < num; i++) {
+                if (num % i == 0) {
+                    return false
+                }
+            }
+            return true
+        }
+
+
+        alert(isPrime(3))
+        alert(isPrime(11))
+        alert(isPrime(4))
+        
+    </script>
+</body>
+
+</html>
