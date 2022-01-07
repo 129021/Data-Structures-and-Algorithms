@@ -112,15 +112,15 @@
             // 寻找最值
 
             // 1. 寻找最大值
-            BinarySearchTree.prototype.max=function(){
+            BinarySearchTree.prototype.max = function () {
                 // 1. 获取根节点
-                var node=this.root
+                var node = this.root
 
                 // 2. 依次向右不断的查找，直到节点为null
-                var key=null
-                while(node!=null){
-                    key=node.key
-                    node=node.right
+                var key = null
+                while (node != null) {
+                    key = node.key
+                    node = node.right
                 }
 
                 return key
@@ -128,14 +128,14 @@
 
 
             // 2. 寻找最小值
-            BinarySearchTree.prototype.min=function(){
+            BinarySearchTree.prototype.min = function () {
                 // 1. 获取根节点
-                var node=this.root
+                var node = this.root
                 // 2. 依次向左不断查找，直到节点为Null
-                var key=null
-                while(node!==null){
-                    key=node.key
-                    node=node.left
+                var key = null
+                while (node !== null) {
+                    key = node.key
+                    node = node.left
                 }
 
                 return key
@@ -143,13 +143,84 @@
 
 
             // 搜索某一个key
-            BinarySearchTree.prototype.search=function(key){
+            BinarySearchTree.prototype.search = function (key) {
                 // 1. 获取根节点
-                var node=this.root
+                var node = this.root
 
                 // 2. 循环搜索key
-                
+                while (node != null) {
+                    if (key < node.key) {
+                        node = node.left
+                    } else if (key > node.key) {
+                        node = node.right
+                    } else {
+                        return true
+                    }
+                }
+                return false
             }
+
+            // 删除节点
+            BinarySearchTree.prototype.remove = function (key) {
+                // 1. 寻找要删除的节点
+                // 1.1. 定义变量，保存一些信息
+                var current = this.root
+                var parent = null
+                var isLeftChild = true
+
+                // 1.2. 开始寻找删除的节点
+                while (current.key != key) {
+                    parent = current
+                    if (key < current.key) {
+                        isLeftChild = true
+                        current = current.left
+                    } else {
+                        isLeftChild = false
+                        current = current.right
+                    }
+
+
+                    // 某种情况：已经找到了最后的节点,依然没有找到==key
+                    if (current == null) {
+                        return false
+                    }
+                }
+
+                // 2. 根据对应的情况删除节点
+                // 2.1. 删除的节点时叶子节点
+                if (current.left == null && current.right == null) {
+                    // 删除的节点时根节点，而且根节点是叶子节点
+                    if (current == this.root) {
+                        this.root = null
+                    } else if (isLeftChild) {
+                        parent.left = null
+                    } else {
+                        parent.right = null
+                    }
+                }
+
+                // 2.2. 删除的节点有一个子节点
+                else if (current.right = null) {
+                    if (current == this.root) {
+                        this.root = current.left
+                    } else if (isLeftChild) {
+                        parent.left = current.left
+                    } else {
+                        parent.right = current.left
+                    }
+                } else if (current.left == null) {
+                    if (current == this.root) {
+                        this.root = current.right
+                    } else if (isLeftChild) {
+                        parent.left = current.right
+                    } else {
+                        parent.right = current.right
+                    }
+                }
+                // 2.3. 删除的节点有两个子节点
+            }
+
+
 
 
 
@@ -202,8 +273,13 @@
 
         // alert(resultString)
 
+        // 4. 测试最值方法
         // alert(bst.max())
-        alert(bst.min())
+        // alert(bst.min())
+
+        // 5. 测试搜索方法
+        // alert(bst.search(25))
+        // alert(bst.search(999))
     </script>
 </body>
 
