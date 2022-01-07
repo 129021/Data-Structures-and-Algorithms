@@ -217,13 +217,46 @@
                         parent.right = current.right
                     }
                 }
-                // 2.3. 删除的节点有两个子节点
+                // 删除节点有两个子节点的情况待补充
+                else {
+                    // 1. 获取后继节点
+                    var successor = this.getSuccessor(current)
+
+                    // 2. 判断是否是根节点
+                    if (current == this.root) {
+                        this.root = successor
+                    } else if (isLeftChild) {
+                        parent.left = successor
+                    } else {
+                        parent.right = successor
+                    }
+
+                    // 3. 将删除节点的左子树=current.left
+                    successor.left = current.left
+
+                }
             }
 
 
+            BinarySearchTree.prototype.getSuccessor = function (delNode) {
+                // 1. 定义变量，保存找到的后继
+                var successor = delNode
+                var current = delNode.right
+                var successorParent = delNode
 
-
-
+                // 2. 循环查找
+                while (current != null) {
+                    successorParent = successor
+                    successor = current
+                    current = current.left
+                }
+                // 3. 判断寻找的后继节点是否直接就是delNode的right节点
+                if (successor != delNode.right) {
+                    successorParent.left = successor.right
+                    successor.right = delNode.right
+                }
+                return successor
+            }
         }
 
 
@@ -280,6 +313,12 @@
         // 5. 测试搜索方法
         // alert(bst.search(25))
         // alert(bst.search(999))
+
+
+        // 6. 测试删除代码
+        bst.reomve(9)
+        bst.reomve(7)
+        bst.reomve(15)
     </script>
 </body>
 
