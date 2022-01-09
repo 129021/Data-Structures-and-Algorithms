@@ -65,3 +65,190 @@
 - 它必须构造一个“逆邻接表”，才能有效计算“入度”，但是开发中“出度”相对用的比较少
 
 ## 1.5. 图结构封装
+```html
+<script>
+    // 封装图结构
+    function Graph() {
+        //属性
+        // 顶点：使用数组
+        this.vertexes = []
+        // 边：使用字典
+        this.edges = new Dictionary()
+
+        //方法
+
+        // 添加方法
+        // 1. 添加顶点的方法
+        Graph.prototype.addVertex = function (v) {
+            this.vertexes.push(v)
+            this.edges.set(v, [])
+        }
+
+        // 2. 添加边的方法
+        // 添加边的方法
+        Graph.prototype.addEdge = function (v1, v2) {
+            this.edges.get(v1).push(v2)
+            this.edges.get(v2).push(v1)
+        }
+
+        // 实现toString方法
+        Graph.prototype.toString = function () {
+            // 1. 定义字符串，保存最终的结果
+            var resultString = ''
+
+            // 2. 遍历所有的顶点，以及顶点对应的边
+            for (var i = 0; i < this.vertexes.length; i++) {
+                resultString += this.vertexes[i] + '->'
+                var vEdges = this.edges.get(this.vertexes[i])
+                for (var j = 0; j < vEdges.length; j++) {
+                    resultString += vEdges[j] + ' '
+                }
+                resultString += '\n'
+            }
+            return resultString
+        }
+    }
+
+    //  测试代码
+    // 1. 创建图结构
+    var g = new Graph()
+
+    // 2. 添加顶点
+    var myVertexes = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
+    for (var i = 0; i < myVertexes.length; i++) {
+        g.addVertex(myVertexes[i])
+    }
+
+    // 3. 添加边
+    g.addEdge('A', 'B')
+    g.addEdge('A', 'C')
+    g.addEdge('A', 'D')
+    g.addEdge('C', 'D')
+    g.addEdge('C', 'G')
+    g.addEdge('D', 'G')
+    g.addEdge('D', 'H')
+    g.addEdge('B', 'E')
+    g.addEdge('B', 'F')
+    g.addEdge('E', 'I')
+
+
+    // 4. 测试结果
+    alert(g)
+</script>
+```
+
+## 1.6. 图的遍历
+图的遍历意味着需要将图中每个顶点访问一遍，并且不能有重复的访问
+
+有两种算法可以对图进行遍历：
+- 广度优先搜索（Breadth-First Search,简称BFS）
+- 深度优先搜索（Depth-First Search，简称DFS）
+
+两种遍历算法，都需要明确指定第一个被访问的顶点
+### 1.6.1. 遍历的思想
+两种算法的思想：
+- BFS：基于队列，入队列的顶点先被探索
+- DFS：基于栈或者使用递归，通过将顶点存入栈中，顶点是沿着路径被探索的，存在的新的相邻顶点就去访问
+
+为了记录顶点是否被访问过，我们使用三种颜色来反映他们的状态：
+- 白色：表示该顶点还没有被访问
+- 灰色：表示该顶点被访问过，但是并未被探索过
+- 黑色：表示该顶点被访问过且被完全探索过
+
+### 1.6.2. 广度优先搜索
+广度优先搜索算法的思路：
+- 广度优先算法会从指定的第一个顶点开始遍历图，先访问其所有的相邻点，就像一次访问图的一层
+- 换句话说，就是先宽后深的访问顶点
+
+![](2022-01-09-10-22-01.png)
+
+广度优先搜索的实现：
+- 创建一个队列
+- 将V标注为被发现的灰色，并将V加入队列Q
+- 如果Q非空，执行下面的步骤：
+  - 将V从Q中取出队列
+  - 将V标注为被发现的灰色
+  - 将V所有的未被访问过的邻接点（白色）加入到队列中
+  - 将V标注为黑色
+
+```js
+ // 实现广度优先搜索(BFS)
+Graph.prototype.bfs = function (initV, handler) {
+    // 1. 初始化颜色
+    var colors = this.initializeColor()
+
+    // 2. 创建队列
+    var queue = new Queue()
+
+    // 3. 将顶点加入队列中
+    queue.enqueue(initV)
+
+    // 4. 循环从队列中取出元素
+    while (!queue.isEmpty()) {
+        // 4.1. 从队列中取出一个顶点
+        var v = queue.dequeue()
+
+        // 4.2. 获取和顶点相连的另外顶点
+        var vList = this.edges.get(v)
+
+        // 4.3. 将v的颜色设置为灰色
+        colors[v] = 'gray'
+
+        // 4.4. 遍历所有的顶点，并且加入到队列中
+        for (var i = 0; i < vList.length; i++) {
+            var e = vList[i]
+            if (colors[e] == 'white') {
+                colors[e] = 'gray'
+                queue.enqueue(e)
+            }
+        }
+
+        // 4.5. 访问顶点
+        handler(v)
+
+        // 4.6. 将顶点设置为黑色
+        colors[v] = 'black'
+    }
+}
+```
+
+### 1.6.3. 深度优先搜索
+深度优先搜索的思路：
+- 深度优先搜索算法将会从第一个指定的顶点开始遍历图，沿着路径直到这条路径的最后被访问了
+- 接着原路回退并探索下一条路径
+
+![](2022-01-09-11-49-46.png)
+
+深度优先算法的实现：
+- 广度优先算法我们使用的是队列，这里可以使用栈完成，也可以使用递归
+- 方便代码书写，使用递归
+
+```js
+// 深度优先搜索实现(DFS)
+Graph.prototype.dfs = function (initV, handler) {
+    // 1. 初始化颜色
+    var colors = this.initializeColor()
+
+    // 2. 从某个顶点开始递归访问
+    this.dfsVisit(initV,colors,handler)
+}
+Graph.prototype.dfsVisit = function (v, colors, handler) {
+        // 1. 将颜色设置为灰色
+        colors[v] = 'gray'
+
+        // 2. 处理v顶点
+        handler(v)
+
+        // 3. 访问v相连的其他顶点
+        var vList = this.edges.get(v)
+        for (var i = 0; i < vList.length; i++) {
+            var e = vList[i]
+            if (colors[e] == 'white') {
+                this.dfsVisit(e, color, handler)
+            }
+        }
+
+        // 4. 将v设置成黑色
+        colors[v] = 'black'
+    }
+```
