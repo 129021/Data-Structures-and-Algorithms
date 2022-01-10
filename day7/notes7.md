@@ -38,3 +38,33 @@
   - 希尔排序
   - 快速排序
 
+## 2.2. 封装列表
+在开始排序前，我们先来创建一个列表封装我们的数据项
+```js
+// 创建列表类
+function ArrayList() {
+    //属性
+    this.array = []
+
+    //方法
+
+    // 将数组可以插入到数组中的方法
+    ArrayList.prototype.insert = function (item) {
+        this.array.push(item)
+    }
+
+    // toString方法
+    ArrayList.prototype.toString=function(){
+        return this.array.join('-')
+    }
+}
+```
+## 2.3. 冒泡排序
+冒泡排序的思路：
+- 对未排序的各元素从头到尾依次比较相邻的两个元素大小关系
+- 如果左边的队员高，则两队员交换位置
+- 向右移动一个位置，比较下面两个队员
+- 当走到最右端时，最高的队员一定被放在了最右边
+- 按照这个思路，从最左端重新开始，这次走到倒数第二个位置的队员即可
+- 以此类推，就可以将数据排序完成
+
