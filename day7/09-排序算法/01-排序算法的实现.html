@@ -23,23 +23,56 @@
             }
 
             // toString方法
-            ArrayList.prototype.toString=function(){
+            ArrayList.prototype.toString = function () {
                 return this.array.join('-')
+            }
+
+            // 交换两个位置的数据
+            ArrayList.prototype.swap = function (m, n) {
+                var temp = this.array[m]
+                this.array[m] = this.array[n]
+                this.array[n] = temp
             }
 
             // 实现排序算法
 
             // 冒泡排序
-            ArrayList.prototype.bubblesort=function(){
+            ArrayList.prototype.bubblesort = function () {
                 // 1. 获取数组的长度
-                var length=this.array.length
-
-                for(var i=0;i<length;i++){
-                    if(this.array[i])
+                var length = this.array.length
+                // 第一次：j=length-1，比较到倒数第一个位置
+                // 第二次：j=length-2，比较到倒数第2个位置
+                // 以此类推
+                for (var j = length - 1; j >= 0; j--) {
+                    for (var i = 0; i < j; i++) {
+                        // 第一次进来：i=0,比较0和1位置的两个数据，如果0位置上的数据比较大，交换两个数据的位置
+                        if (this.array[i] > this.array[i + 1]) {
+                            //交换两个数据的位置
+                            // var temp = this.array[i]
+                            // this.array[i] = this.array[i + 1]
+                            // this.array[i + 1] = tmep
+                            this.swap(i, i + 1)
+                        }
+                    }
                 }
             }
 
             // 选择排序
+
+            ArrayList.prototype.selectionSort = function () {
+                // 1. 获取数组的长度
+                var length = this.array.length
+
+
+                // 2. 
+                var min=0
+                for(var i=min+1;i<length;i++){
+                    if(this.array[min]>this.array[i]){
+                        min=i
+                    }
+                }
+                this.swap(min,0)
+            }
 
             // 插入排序
 
@@ -50,7 +83,7 @@
 
 
         // 测试类
-        var list=new ArrayList()
+        var list = new ArrayList()
 
         // 插入元素
         list.insert(66)
@@ -62,6 +95,19 @@
         list.insert(72)
         list.insert(73)
         list.insert(74)
+        list.insert(4)
+        list.insert(88)
+        list.insert(2)
+
+
+        // 验证冒泡排序
+        // list.bubblesort()
+        // alert(list)
+
+
+        // 验证选择排序
+        list.selectionSort()
+        alert(list)
     </script>
 </body>
 
