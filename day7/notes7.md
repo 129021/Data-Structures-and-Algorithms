@@ -211,4 +211,173 @@ ArrayList.prototype.insertionSort = function () {
 ## 2.6. 希尔排序
 希尔排序是插入排序的一种高效的改进版，效率比插入排序更快
 
+插入排序的问题：
+- 假设一个很小的数据项在很靠近右端的位置上，这里本来应该是较大的数据项的位置
+- 把这个小数据项移到左边的正确位置，所有的中间数据项都必须向右移动一位
+- 如果每个步骤对数据项都进行N次复制，平均下来是移动N/2,N 个元素就是N*N/2=N^2/2
+- 所以我们通常认为插入效率是O(N^2)
+- 如果有某种方式，不需要一个个移动所有中间的数据项，就能把较小的数据项移动到左边，那么这个算法的执行效率会有很大的改进
 
+### 2.6.1. 希尔排序的思路
+
+比如下面的数字：81,94,11,96,12,35,17,95,28,58,41,75,15
+
+我们先让间隔为5，进行排序：(35,81),(94,17),(11,95),(96,28),(12,58),(35,41),(17,75),(95,15)
+
+排序后的新序列，一定可以让数字里自己的正确位置更近一步
+
+我们再让间隔为3，进行排序：(35,28,75,58,95),(17,12,15,81),(11,41,96,94)
+
+排序后的新序列，一定可以让数字离自己的正确位置又近了一步
+
+最后我们让间隔为1，也就是正确的插入排序
+![](2022-01-14-11-09-10.png)
+
+
+
+### 2.6.2. 希尔排序的代码实现
+```js
+// 希尔排序
+
+ArrayList.prototype.shellSort = function () {
+    // 1. 获取数组的长度 
+    var length=this.array.length
+
+    // 2. 初始化的增量
+    var gap=Math.floor(length/2)
+
+    // 3. while循环 gap不断减小
+    while(gap>=1){
+        // 4. 以gap作为间隔进行分组，对分组进行插入排序
+        for(var i=gap;i<length;i++){
+            var temp=this.array[i]
+            var j=i
+            while(this.array[j-gap]>temp &&j>gap-1){
+                this.array[j]=this.array[j-gap]
+                j-=gap
+            }
+            
+        // 5. 将j位置的元素赋值temp
+        this.array[j]=temp
+              
+        }
+        // 6. 增量变化 
+
+        gap=Math.floor(gap/2)
+    }
+
+}
+```
+
+
+### 2.6.3. 希尔排序的效率
+经过统计，希尔排序使用原始增量，最坏的情况下时间复杂度为O(n^2),通常情况下都要好于O(N^2)
+
+希尔排序的大多数情况下都高于简单排序
+甚至在合适的增量和某些数量N的情况下，还要好于快速排序
+
+
+## 2.7. 快速排序
+快速排序几乎可以说是目前所有排序算法中，最快的一种排序算法
+
+希尔排序相当于插入排序的升级版，快速排序其实是冒泡排序的升级版
+- 冒泡排序需要进行很多次交换，才能在一次循环中，将最大值放在正确的位置
+- 快速排序可以在一次循环中（其实是递归调用），找出某个元素的正确位置，并且该元素之后不需要进行任何移动
+- 快速排序最重要的思想是分而治之
+
+比如我们有下面这样一些数字需要排序：
+![](2022-01-14-11-57-01.png)
+
+1. 从其中选出65（其实可以选择任意数字）
+2. 我们通过算法：将所有小于65的数字放在65的左边，将所有大于65的数字放在65的右边
+3. 递归处理左边的数据（比如选择31来处理左侧）递归处理右侧的数据（比如选择75来处理右侧）
+4. 最终：完成排序
+
+### 2.7.1. 快速排序的枢纽
+在快速排序中有一个很重要的步骤就是选取枢纽（pivit也有人称为主元）
+
+一种比较优秀的解决方案是：取头中尾的中位数
+  
+
+
+
+### 2.7.2. 快速排序的代码实现
+```js
+// 快速排序
+
+// 1. 选择枢纽
+ArrayList.prototype.median = function (left, right) {
+    // 1.取出中间的位置
+    var center = Math.floor((left + right) / 2)
+
+    // 2. 判断大小，并进行交换
+    if (this.array[left] > this.array[center]) {
+        this.swap(left, center)
+    }
+    if (this.array[center] > this.array[right]) {
+        this.swap(center, right)
+    }
+    if (this.array[left] > this.array[center]) {
+        this.swap(left, center)
+    }
+    // if(this.array[center]<this.array[left]&&this.array[cneter]<this.array[right]){
+    //     this.swap(center,left)
+    // }
+
+
+    // 将center换到right-1的位置
+    this.swap(center, right - 1)
+
+    return this.array[right - 1]
+}
+
+
+// 2. 快速排序的实现
+ArrayList.prototype.quickSort = function () {
+    this.quick(0, this.array.length - 1)
+
+}
+
+ArrayList.prototype.quick = function (left, right) {
+    // 1. 结束条件
+    if (left >= right) return
+
+    // 2. 获取枢纽
+    var pivot = this.median(left, right)
+
+
+    // 3.定义变量用于记录当前找到的位置
+    var i = left
+    var j = right - 1
+
+    // 4. 开始进行交换循环
+    while (i<j) {
+        while (this.array[++i] < pivot) {
+
+        }
+        while (this.array[--j] > pivot) {}
+
+
+        if(i<j){
+            this.swap(i,j)
+        }else{
+            break
+        }
+    }
+
+    // 6. 将枢纽放置在正确的位置，i的位置
+    this.swap(i,right-1)
+
+    // 7. 分而治之
+    this.quick(left,i-1)
+    this.quick(i-1,right)
+
+}
+}
+```
+### 2.7.3. 快速排序的效率
+快速排序的最坏情况效率
+在每次选择的枢纽都是最左边或者最右边的情况下，快速排序效率最坏，这时的效率等同于冒泡排序
+
+快速排序的平均效率：
+快速排序的平均效率是O(N*logN)

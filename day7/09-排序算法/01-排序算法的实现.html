@@ -95,7 +95,7 @@
                     }
 
                     // 4. 将j位置的数据，放置temp 就可以
-                    this.array[j]=temp
+                    this.array[j] = temp
                 }
 
             }
@@ -103,7 +103,105 @@
 
             // 希尔排序
 
+            ArrayList.prototype.shellSort = function () {
+                // 1. 获取数组的长度 
+                var length = this.array.length
+
+                // 2. 初始化的增量
+                var gap = Math.floor(length / 2)
+
+                // 3. while循环 gap不断减小
+                while (gap >= 1) {
+                    // 4. 以gap作为间隔进行分组，对分组进行插入排序
+                    for (var i = gap; i < length; i++) {
+                        var temp = this.array[i]
+                        var j = i
+                        while (this.array[j - gap] > temp && j > gap - 1) {
+                            this.array[j] = this.array[j - gap]
+                            j -= gap
+                        }
+
+                        // 5. 将j位置的元素赋值temp
+                        this.array[j] = temp
+
+                    }
+                    // 6. 增量变化 
+
+                    gap = Math.floor(gap / 2)
+                }
+
+            }
+
             // 快速排序
+
+            // 1. 选择枢纽
+            ArrayList.prototype.median = function (left, right) {
+                // 1.取出中间的位置
+                var center = Math.floor((left + right) / 2)
+
+                // 2. 判断大小，并进行交换
+                if (this.array[left] > this.array[center]) {
+                    this.swap(left, center)
+                }
+                if (this.array[center] > this.array[right]) {
+                    this.swap(center, right)
+                }
+                if (this.array[left] > this.array[center]) {
+                    this.swap(left, center)
+                }
+                // if(this.array[center]<this.array[left]&&this.array[cneter]<this.array[right]){
+                //     this.swap(center,left)
+                // }
+
+
+                // 将center换到right-1的位置
+                this.swap(center, right - 1)
+
+                return this.array[right - 1]
+            }
+
+
+            // 2. 快速排序的实现
+            ArrayList.prototype.quickSort = function () {
+                this.quick(0, this.array.length - 1)
+
+            }
+
+            ArrayList.prototype.quick = function (left, right) {
+                // 1. 结束条件
+                if (left >= right) return
+
+                // 2. 获取枢纽
+                var pivot = this.median(left, right)
+
+
+                // 3.定义变量用于记录当前找到的位置
+                var i = left
+                var j = right - 1
+
+                // 4. 开始进行交换循环
+                while (i<j) {
+                    while (this.array[++i] < pivot) {
+
+                    }
+                    while (this.array[--j] > pivot) {}
+
+
+                    if(i<j){
+                        this.swap(i,j)
+                    }else{
+                        break
+                    }
+                }
+
+                // 6. 将枢纽放置在正确的位置，i的位置
+                this.swap(i,right-1)
+
+                // 7. 分而治之
+                this.quick(left,i-1)
+                this.quick(i-1,right)
+
+            }
         }
 
 
@@ -131,8 +229,20 @@
 
 
         // 验证选择排序
-        list.selectionSort()
+        // list.selectionSort()
+        // alert(list)
+
+
+
+        // 验证希尔排序
+        // list.shellSort()
+        // alert(list)
+
+
+        // 验证快速排序
+        list.quickSort()
         alert(list)
+
     </script>
 </body>
 
